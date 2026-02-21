@@ -48,23 +48,6 @@ dompetku/
 
 ---
 
-## 🌐 Tutorial Hosting di Netlify (Gratis, < 2 Menit)
-
-### Langkah 1 — Buat akun Netlify
-Buka [netlify.com](https://netlify.com) → Sign up (bisa pakai GitHub/Google/email)
-
-### Langkah 2 — Deploy via Drag & Drop
-1. Setelah login, di halaman dashboard klik tab **Sites**
-2. Scroll ke bawah, ada area **"Drag and drop your site folder here"**
-3. Drag folder `dompetku/` langsung ke area tersebut
-4. Tunggu beberapa detik...
-5. ✅ **Selesai!** Netlify akan memberikan URL seperti `https://amazing-name-123.netlify.app`
-
-### Langkah 3 — Ganti nama domain (opsional)
-1. Klik **Site configuration → Change site name**
-2. Ganti dengan nama yang diinginkan, misal: `dompetku-app`
-3. URL menjadi `https://dompetku-app.netlify.app`
-
 > 💡 **Catatan:** Data pengguna tersimpan di `localStorage` browser masing-masing. Artinya data hanya ada di browser/device yang digunakan untuk mendaftar — tidak sinkron antar device.
 
 ---
@@ -82,12 +65,3 @@ Buka [netlify.com](https://netlify.com) → Sign up (bisa pakai GitHub/Google/em
 
 ---
 
-## 📸 Screenshot
-
-> Tambahkan screenshot aplikasi di sini setelah deploy.
-
----
-
-## 📄 Lisensi
-
-MIT License — bebas digunakan dan dimodifikasi.
