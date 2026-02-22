@@ -3,370 +3,364 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dompetku — Expense Tracker</title>
+  <title>Dompetku — Financial Planner</title>
   <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <!-- ===== AUTH SCREEN ===== -->
-  <div id="auth-screen">
-    <div class="auth-card">
-      <div class="auth-logo">🪙 Dompetku</div>
-      <div class="auth-tagline">Kelola keuangan dengan tenang dan bijak</div>
-
-      <div class="auth-tabs">
-        <button class="auth-tab active" onclick="switchAuthTab('login')">Masuk</button>
-        <button class="auth-tab" onclick="switchAuthTab('register')">Daftar</button>
+<!-- ===== AUTH SCREEN ===== -->
+<div id="auth-screen">
+  <div class="auth-card">
+    <div class="auth-logo">🪙 Dompetku</div>
+    <div class="auth-tagline">Kelola keuangan dengan tenang dan bijak</div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchAuthTab('login')">Masuk</button>
+      <button class="auth-tab" onclick="switchAuthTab('register')">Daftar</button>
+    </div>
+    <div id="login-form">
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" type="text" id="login-username" placeholder="Masukkan username Anda">
       </div>
-
-      <!-- Login Form -->
-      <div id="login-form">
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" type="text" id="login-username" placeholder="Masukkan username Anda">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kata Sandi</label>
-          <input class="form-input" type="password" id="login-pass" placeholder="••••••••">
-        </div>
-        <button class="btn-primary" onclick="doLogin()">Masuk</button>
-        <div class="auth-error" id="login-err"></div>
+      <div class="form-group">
+        <label class="form-label">Kata Sandi</label>
+        <input class="form-input" type="password" id="login-pass" placeholder="••••••••">
       </div>
-
-      <!-- Register Form -->
-      <div id="register-form" class="hidden">
-        <div class="form-group">
-          <label class="form-label">Nama Lengkap</label>
-          <input class="form-input" type="text" id="reg-name" placeholder="Nama Anda">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Username</label>
-          <input class="form-input" type="text" id="reg-username" placeholder="Buat username unik">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Kata Sandi</label>
-          <input class="form-input" type="password" id="reg-pass" placeholder="Min. 6 karakter">
-        </div>
-        <button class="btn-primary" onclick="doRegister()">Buat Akun</button>
-        <div class="auth-error" id="reg-err"></div>
+      <button class="btn-primary" onclick="doLogin()">Masuk</button>
+      <div class="auth-error" id="login-err"></div>
+    </div>
+    <div id="register-form" class="hidden">
+      <div class="form-group">
+        <label class="form-label">Nama Lengkap</label>
+        <input class="form-input" type="text" id="reg-name" placeholder="Nama Anda">
       </div>
+      <div class="form-group">
+        <label class="form-label">Username</label>
+        <input class="form-input" type="text" id="reg-username" placeholder="Buat username unik">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Kata Sandi</label>
+        <input class="form-input" type="password" id="reg-pass" placeholder="Min. 6 karakter">
+      </div>
+      <button class="btn-primary" onclick="doRegister()">Buat Akun</button>
+      <div class="auth-error" id="reg-err"></div>
     </div>
   </div>
+</div>
 
-  <!-- ===== APP SCREEN ===== -->
-  <div id="app-screen">
-
-    <!-- Header -->
-    <header class="app-header">
-      <div class="header-logo">🪙 Dompetku</div>
-      <div class="header-right">
-        <span class="header-user" id="header-username"></span>
-        <button class="btn-logout" onclick="doLogout()">Keluar</button>
+<!-- ===== APP SCREEN ===== -->
+<div id="app-screen">
+  <header class="app-header">
+    <div class="header-logo">🪙 Dompetku</div>
+    <div class="header-center">
+      <div class="semester-bar">
+        <span class="semester-label">Semester:</span>
+        <select id="semester-select" onchange="onSemesterChange()"></select>
+        <button class="btn-icon" onclick="openSemesterModal()" title="Kelola Semester">⚙️</button>
       </div>
-    </header>
+    </div>
+    <div class="header-right">
+      <span class="header-user" id="header-username"></span>
+      <button class="btn-logout" onclick="doLogout()">Keluar</button>
+    </div>
+  </header>
 
-    <!-- Navigation -->
-    <nav class="app-nav">
-      <button class="nav-tab active" onclick="showPage('income')">💰 Pemasukan</button>
-      <button class="nav-tab" onclick="showPage('expense')">💸 Pengeluaran</button>
-      <button class="nav-tab" onclick="showPage('summary')">📊 Ringkasan</button>
-      <button class="nav-tab" onclick="showPage('categories')">🏷️ Kategori</button>
-      <button class="nav-tab" onclick="showPage('profile')">👤 Profil</button>
-    </nav>
+  <nav class="app-nav">
+    <button class="nav-tab active" onclick="showPage('dashboard')">📊 Dashboard</button>
+    <button class="nav-tab" onclick="showPage('expense')">💸 Pengeluaran</button>
+    <button class="nav-tab" onclick="showPage('income')">💰 Pemasukan</button>
+    <button class="nav-tab" onclick="showPage('budget')">🎯 Budget</button>
+    <button class="nav-tab" onclick="showPage('saving')">🏦 Tabungan</button>
+    <button class="nav-tab" onclick="showPage('invest')">📈 Investasi</button>
+    <button class="nav-tab" onclick="showPage('categories')">🏷️ Kategori</button>
+    <button class="nav-tab" onclick="showPage('profile')">👤 Profil</button>
+  </nav>
 
-    <!-- Content -->
-    <main class="app-content">
+  <main class="app-content">
 
-      <!-- PAGE: INCOME -->
-      <div id="page-income">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Pemasukan</div>
-            <div class="page-subtitle">Catat semua sumber pendapatan Anda</div>
-          </div>
+    <!-- DASHBOARD -->
+    <div id="page-dashboard">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Dashboard</div>
+          <div class="page-subtitle" id="dash-subtitle">Ringkasan keuangan semester ini</div>
         </div>
-
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card-title">Tambah Pemasukan</div>
-          <div class="trans-form" style="margin-top:14px;">
-            <div class="form-group">
-              <label class="form-label">Nama</label>
-              <input class="form-input" type="text" id="inc-name" placeholder="cth. Gaji Bulanan">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Jumlah (Rp)</label>
-              <input class="form-input" type="number" id="inc-amount" placeholder="0" min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <select class="form-input" id="inc-cat"></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tanggal</label>
-              <input class="form-input" type="date" id="inc-date">
-            </div>
-            <div class="form-group" style="grid-column: 1 / 4;">
-              <label class="form-label">Catatan (opsional)</label>
-              <input class="form-input" type="text" id="inc-note" placeholder="Tambahkan catatan...">
-            </div>
-            <div class="form-actions" style="grid-column: 4 / 5; align-self: flex-end; padding-bottom: 0;">
-              <button class="btn-add" style="width:100%;" onclick="addTransaction('income')">+ Tambah</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-bar">
-          <select id="inc-filter-cat" onchange="renderList('income')">
-            <option value="">Semua Kategori</option>
-          </select>
-          <input type="month" id="inc-filter-month" onchange="renderList('income')">
-        </div>
-
-        <div class="trans-list" id="income-list"></div>
+        <button class="btn-export" onclick="exportToExcel()">📥 Export Excel</button>
       </div>
-
-      <!-- PAGE: EXPENSE -->
-      <div id="page-expense" class="hidden">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Pengeluaran</div>
-            <div class="page-subtitle">Pantau setiap pengeluaran Anda</div>
-          </div>
-        </div>
-
-        <div class="card" style="margin-bottom:20px;">
-          <div class="card-title">Tambah Pengeluaran</div>
-          <div class="trans-form" style="margin-top:14px;">
-            <div class="form-group">
-              <label class="form-label">Nama</label>
-              <input class="form-input" type="text" id="exp-name" placeholder="cth. Makan Siang">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Jumlah (Rp)</label>
-              <input class="form-input" type="number" id="exp-amount" placeholder="0" min="0">
-            </div>
-            <div class="form-group">
-              <label class="form-label">Kategori</label>
-              <select class="form-input" id="exp-cat"></select>
-            </div>
-            <div class="form-group">
-              <label class="form-label">Tanggal</label>
-              <input class="form-input" type="date" id="exp-date">
-            </div>
-            <div class="form-group" style="grid-column: 1 / 4;">
-              <label class="form-label">Catatan (opsional)</label>
-              <input class="form-input" type="text" id="exp-note" placeholder="Tambahkan catatan...">
-            </div>
-            <div class="form-actions" style="grid-column: 4 / 5; align-self: flex-end;">
-              <button class="btn-add btn-add-expense" style="width:100%;" onclick="addTransaction('expense')">+ Tambah</button>
-            </div>
-          </div>
-        </div>
-
-        <div class="filter-bar">
-          <select id="exp-filter-cat" onchange="renderList('expense')">
-            <option value="">Semua Kategori</option>
-          </select>
-          <input type="month" id="exp-filter-month" onchange="renderList('expense')">
-        </div>
-
-        <div class="trans-list" id="expense-list"></div>
+      <div class="stats-grid five-col">
+        <div class="stat-card balance"><div class="stat-label">💼 Saldo Bersih</div><div class="stat-value stat-balance" id="dash-balance">Rp 0</div></div>
+        <div class="stat-card income-card"><div class="stat-label">📈 Pemasukan</div><div class="stat-value stat-income" id="dash-income">Rp 0</div></div>
+        <div class="stat-card expense-card"><div class="stat-label">📉 Pengeluaran</div><div class="stat-value stat-expense" id="dash-expense">Rp 0</div></div>
+        <div class="stat-card saving-card"><div class="stat-label">🏦 Tabungan</div><div class="stat-value stat-saving" id="dash-saving">Rp 0</div></div>
+        <div class="stat-card invest-card"><div class="stat-label">📈 Investasi</div><div class="stat-value stat-invest" id="dash-invest">Rp 0</div></div>
       </div>
-
-      <!-- PAGE: SUMMARY -->
-      <div id="page-summary" class="hidden">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Ringkasan Keuangan</div>
-            <div class="page-subtitle">Gambaran lengkap kondisi keuangan Anda</div>
-          </div>
-          <div class="period-select">
-            <button class="period-btn" onclick="setPeriod('week')">Minggu</button>
-            <button class="period-btn active" onclick="setPeriod('month')">Bulan</button>
-            <button class="period-btn" onclick="setPeriod('year')">Tahun</button>
-            <button class="period-btn" onclick="setPeriod('all')">Semua</button>
-          </div>
-        </div>
-
-        <div class="stats-grid">
-          <div class="stat-card balance">
-            <div class="stat-label">💼 Saldo</div>
-            <div class="stat-value stat-balance" id="stat-balance">Rp 0</div>
-          </div>
-          <div class="stat-card income-card">
-            <div class="stat-label">📈 Total Pemasukan</div>
-            <div class="stat-value stat-income" id="stat-income">Rp 0</div>
-          </div>
-          <div class="stat-card expense-card">
-            <div class="stat-label">📉 Total Pengeluaran</div>
-            <div class="stat-value stat-expense" id="stat-expense">Rp 0</div>
-          </div>
-        </div>
-
-        <div class="charts-grid">
-          <div class="card chart-card">
-            <div class="card-title">📊 Tren Bulanan</div>
-            <div class="chart-wrap"><canvas id="barChart"></canvas></div>
-          </div>
-          <div class="card chart-card">
-            <div class="card-title">🍩 Pengeluaran per Kategori</div>
-            <div class="chart-wrap"><canvas id="pieChart"></canvas></div>
-          </div>
-        </div>
-
+      <div class="charts-grid">
         <div class="card chart-card">
-          <div class="card-title">📈 Arus Kas — 30 Hari Terakhir</div>
-          <div style="height:220px;"><canvas id="lineChart"></canvas></div>
+          <div class="card-title">📊 Pemasukan vs Pengeluaran per Bulan</div>
+          <div class="chart-wrap"><canvas id="dashBarChart"></canvas></div>
+        </div>
+        <div class="card chart-card">
+          <div class="card-title">🍩 Pengeluaran per Kategori</div>
+          <div class="chart-wrap"><canvas id="dashPieChart"></canvas></div>
         </div>
       </div>
+      <div class="card" style="margin-top:20px;">
+        <div class="card-title">📋 Rekap per Bulan</div>
+        <div style="overflow-x:auto; margin-top:14px;"><table class="recap-table" id="dash-recap-table"></table></div>
+      </div>
+    </div>
 
-      <!-- PAGE: CATEGORIES -->
-      <div id="page-categories" class="hidden">
-        <div class="page-header">
+    <!-- PENGELUARAN -->
+    <div id="page-expense" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Pengeluaran</div>
+          <div class="page-subtitle">Input pengeluaran per periode 7 harian</div>
+        </div>
+        <div class="month-nav">
+          <button class="btn-icon" onclick="changeExpenseMonth(-1)">◀</button>
+          <span id="expense-month-label" style="font-weight:600;color:var(--text);padding:0 8px;"></span>
+          <button class="btn-icon" onclick="changeExpenseMonth(1)">▶</button>
+        </div>
+      </div>
+      <div class="stats-grid" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
+        <div class="stat-card income-card"><div class="stat-label">📈 Pemasukan Bulan Ini</div><div class="stat-value stat-income" id="exp-page-income">Rp 0</div></div>
+        <div class="stat-card expense-card"><div class="stat-label">📉 Pengeluaran Bulan Ini</div><div class="stat-value stat-expense" id="exp-page-expense">Rp 0</div></div>
+        <div class="stat-card balance"><div class="stat-label">💼 Sisa</div><div class="stat-value stat-balance" id="exp-page-sisa">Rp 0</div></div>
+      </div>
+      <div class="period-tabs" id="period-tabs"></div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title" id="expense-period-title">Periode 1 (1–7)</div>
+        <div class="expense-cat-grid" id="expense-cat-grid"></div>
+        <div class="expense-period-total">Total Periode: <span id="expense-period-total">Rp 0</span></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Rekap Semua Periode</div>
+        <div style="overflow-x:auto;margin-top:14px;"><table class="recap-table" id="expense-recap-table"></table></div>
+      </div>
+    </div>
+
+    <!-- PEMASUKAN -->
+    <div id="page-income" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Pemasukan</div>
+          <div class="page-subtitle">Catat semua sumber pendapatan</div>
+        </div>
+        <div class="month-nav">
+          <button class="btn-icon" onclick="changeIncomeMonth(-1)">◀</button>
+          <span id="income-month-label" style="font-weight:600;color:var(--text);padding:0 8px;"></span>
+          <button class="btn-icon" onclick="changeIncomeMonth(1)">▶</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">Tambah Pemasukan</div>
+        <div class="trans-form" style="margin-top:14px;">
+          <div class="form-group">
+            <label class="form-label">Nama / Sumber</label>
+            <input class="form-input" type="text" id="inc-name" placeholder="cth. Gaji, Freelance">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Jumlah (Rp)</label>
+            <input class="form-input" type="number" id="inc-amount" placeholder="0" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Tanggal</label>
+            <input class="form-input" type="date" id="inc-date">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Catatan</label>
+            <input class="form-input" type="text" id="inc-note" placeholder="Opsional">
+          </div>
+          <div style="grid-column:1/-1;display:flex;justify-content:flex-end;">
+            <button class="btn-add" onclick="addIncome()">+ Tambah Pemasukan</button>
+          </div>
+        </div>
+      </div>
+      <div class="trans-list" id="income-list"></div>
+    </div>
+
+    <!-- BUDGET -->
+    <div id="page-budget" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Alokasi Budget</div>
+          <div class="page-subtitle">Atur anggaran per kategori per bulan</div>
+        </div>
+        <div class="month-nav">
+          <button class="btn-icon" onclick="changeBudgetMonth(-1)">◀</button>
+          <span id="budget-month-label" style="font-weight:600;color:var(--text);padding:0 8px;"></span>
+          <button class="btn-icon" onclick="changeBudgetMonth(1)">▶</button>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">🎯 Set Budget per Kategori</div>
+        <div id="budget-grid" style="margin-top:16px;"></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <button class="btn-add" onclick="saveBudget()">💾 Simpan Budget</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📊 Realisasi vs Budget</div>
+        <div style="overflow-x:auto;margin-top:14px;"><table class="recap-table" id="budget-recap-table"></table></div>
+      </div>
+    </div>
+
+    <!-- TABUNGAN -->
+    <div id="page-saving" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Tabungan</div>
+          <div class="page-subtitle">Tracking tabungan per platform sepanjang semester</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">🏦 Platform Tabungan</div>
+        <div class="cats-grid" id="saving-platforms-display" style="margin-top:12px;"></div>
+        <div class="add-cat-form" style="margin-top:16px;">
+          <div style="flex:1;">
+            <label class="form-label">Tambah Platform Baru</label>
+            <input class="form-input" type="text" id="new-platform" placeholder="cth. OVO, GoPay">
+          </div>
+          <button class="btn-sm btn-primary-sm" onclick="addSavingPlatform()" style="margin-top:auto;">+ Tambah</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📅 Nominal Tabungan per Bulan</div>
+        <div style="overflow-x:auto;margin-top:14px;"><table class="recap-table" id="saving-table"></table></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <button class="btn-add" onclick="saveSavings()">💾 Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- INVESTASI -->
+    <div id="page-invest" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Investasi / RDPU</div>
+          <div class="page-subtitle">Tracking Reksa Dana Pasar Uang per portofolio</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:20px;">
+        <div class="card-title">📁 Portofolio</div>
+        <div class="cats-grid" id="invest-portfolios-display" style="margin-top:12px;"></div>
+        <div class="add-cat-form" style="margin-top:16px;">
+          <div style="flex:1;">
+            <label class="form-label">Tambah Portofolio Baru</label>
+            <input class="form-input" type="text" id="new-portfolio" placeholder="cth. Dana Pendidikan">
+          </div>
+          <button class="btn-sm btn-primary-sm" onclick="addPortfolio()" style="margin-top:auto;">+ Tambah</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-title">📅 Nominal Investasi per Bulan</div>
+        <div style="overflow-x:auto;margin-top:14px;"><table class="recap-table" id="invest-table"></table></div>
+        <div style="display:flex;justify-content:flex-end;margin-top:16px;">
+          <button class="btn-add" onclick="saveInvestments()">💾 Simpan</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- KATEGORI -->
+    <div id="page-categories" class="hidden">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Kategori</div>
+          <div class="page-subtitle">Kelola kategori pengeluaran</div>
+        </div>
+      </div>
+      <div class="card" style="margin-bottom:24px;">
+        <div class="card-title">Tambah Kategori Baru</div>
+        <div class="add-cat-form" style="margin-top:14px;">
           <div>
-            <div class="page-title">Kategori</div>
-            <div class="page-subtitle">Kelola kategori pemasukan & pengeluaran</div>
+            <label class="form-label">Emoji</label>
+            <input class="form-input emoji-input" type="text" id="cat-emoji" placeholder="🏷️">
           </div>
-        </div>
-
-        <div class="card" style="margin-bottom:24px;">
-          <div class="card-title">Tambah Kategori Baru</div>
-          <div class="add-cat-form">
-            <div>
-              <label class="form-label">Emoji</label>
-              <input class="form-input emoji-input" type="text" id="cat-emoji" placeholder="🏷️">
-            </div>
-            <div style="flex:1;">
-              <label class="form-label">Nama Kategori</label>
-              <input class="form-input" type="text" id="cat-name" placeholder="cth. Belanja Groceries">
-            </div>
-            <div>
-              <label class="form-label">Tipe</label>
-              <select class="form-input" id="cat-type">
-                <option value="both">Keduanya</option>
-                <option value="income">Pemasukan</option>
-                <option value="expense">Pengeluaran</option>
-              </select>
-            </div>
-            <button class="btn-sm btn-primary-sm" onclick="addCategory()">+ Tambah</button>
+          <div style="flex:1;">
+            <label class="form-label">Nama Kategori</label>
+            <input class="form-input" type="text" id="cat-name" placeholder="cth. Nongkrong">
           </div>
+          <button class="btn-sm btn-primary-sm" onclick="addCategory()" style="margin-top:auto;">+ Tambah</button>
         </div>
-
-        <div id="cats-grid" class="cats-grid"></div>
       </div>
+      <div id="cats-grid" class="cats-grid"></div>
+    </div>
 
-      <!-- PAGE: PROFILE -->
-      <div id="page-profile" class="hidden">
-        <div class="page-header">
-          <div>
-            <div class="page-title">Profil Saya</div>
-            <div class="page-subtitle">Kelola informasi akun Anda</div>
+    <!-- PROFIL -->
+    <div id="page-profile" class="hidden">
+      <div class="page-header"><div><div class="page-title">Profil Saya</div><div class="page-subtitle">Kelola informasi akun Anda</div></div></div>
+      <div class="profile-layout">
+        <div class="profile-sidebar">
+          <div class="card profile-avatar-card">
+            <div class="avatar-circle" id="profile-avatar-display">F</div>
+            <div class="profile-display-name" id="profile-display-name">—</div>
+            <div class="profile-display-email" id="profile-display-username">—</div>
+            <div class="profile-stats-mini">
+              <div class="profile-stat-item"><div class="profile-stat-value" id="profile-total-txn">0</div><div class="profile-stat-label">Transaksi</div></div>
+              <div class="profile-stat-divider"></div>
+              <div class="profile-stat-item"><div class="profile-stat-value" id="profile-total-cat">0</div><div class="profile-stat-label">Kategori</div></div>
+              <div class="profile-stat-divider"></div>
+              <div class="profile-stat-item"><div class="profile-stat-value" id="profile-member-since">—</div><div class="profile-stat-label">Bergabung</div></div>
+            </div>
           </div>
         </div>
-
-        <div class="profile-layout">
-
-          <!-- Profile Card -->
-          <div class="profile-sidebar">
-            <div class="card profile-avatar-card">
-              <div class="avatar-circle" id="profile-avatar-display">F</div>
-              <div class="profile-display-name" id="profile-display-name">—</div>
-              <div class="profile-display-email" id="profile-display-username">—</div>
-              <div class="profile-stats-mini">
-                <div class="profile-stat-item">
-                  <div class="profile-stat-value" id="profile-total-txn">0</div>
-                  <div class="profile-stat-label">Transaksi</div>
-                </div>
-                <div class="profile-stat-divider"></div>
-                <div class="profile-stat-item">
-                  <div class="profile-stat-value" id="profile-total-cat">0</div>
-                  <div class="profile-stat-label">Kategori</div>
-                </div>
-                <div class="profile-stat-divider"></div>
-                <div class="profile-stat-item">
-                  <div class="profile-stat-value" id="profile-member-since">—</div>
-                  <div class="profile-stat-label">Bergabung</div>
-                </div>
-              </div>
+        <div class="profile-main">
+          <div class="card profile-section">
+            <div class="profile-section-title">✏️ Edit Informasi</div>
+            <div class="profile-form-grid">
+              <div class="form-group"><label class="form-label">Nama Lengkap</label><input class="form-input" type="text" id="edit-name" placeholder="Nama Anda"></div>
+              <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" id="edit-username" placeholder="username_baru"><div class="form-hint">Hanya huruf kecil, angka, dan underscore.</div></div>
             </div>
+            <div class="profile-info-err" id="profile-info-err"></div>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn-add" onclick="saveProfileInfo()">Simpan Perubahan</button></div>
           </div>
-
-          <!-- Edit Forms -->
-          <div class="profile-main">
-
-            <!-- Edit Info -->
-            <div class="card profile-section">
-              <div class="profile-section-title">✏️ Edit Informasi</div>
-              <div class="profile-form-grid">
-                <div class="form-group">
-                  <label class="form-label">Nama Lengkap</label>
-                  <input class="form-input" type="text" id="edit-name" placeholder="Nama Anda">
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Username</label>
-                  <input class="form-input" type="text" id="edit-username" placeholder="username_baru">
-                  <div class="form-hint">Hanya huruf kecil, angka, dan underscore. Min. 3 karakter.</div>
-                </div>
-              </div>
-              <div class="profile-info-err" id="profile-info-err"></div>
-              <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                <button class="btn-add" onclick="saveProfileInfo()">Simpan Perubahan</button>
-              </div>
+          <div class="card profile-section">
+            <div class="profile-section-title">🔒 Ubah Kata Sandi</div>
+            <div class="profile-form-grid">
+              <div class="form-group"><label class="form-label">Kata Sandi Lama</label><div class="input-password-wrap"><input class="form-input" type="password" id="pass-old" placeholder="••••••••"><button class="btn-toggle-pass" onclick="togglePass('pass-old',this)">👁</button></div></div>
+              <div class="form-group"><label class="form-label">Kata Sandi Baru</label><div class="input-password-wrap"><input class="form-input" type="password" id="pass-new" placeholder="Min. 6 karakter"><button class="btn-toggle-pass" onclick="togglePass('pass-new',this)">👁</button></div></div>
+              <div class="form-group"><label class="form-label">Konfirmasi Kata Sandi Baru</label><div class="input-password-wrap"><input class="form-input" type="password" id="pass-confirm" placeholder="Ulangi kata sandi baru"><button class="btn-toggle-pass" onclick="togglePass('pass-confirm',this)">👁</button></div></div>
             </div>
-
-            <!-- Change Password -->
-            <div class="card profile-section">
-              <div class="profile-section-title">🔒 Ubah Kata Sandi</div>
-              <div class="profile-form-grid">
-                <div class="form-group">
-                  <label class="form-label">Kata Sandi Lama</label>
-                  <div class="input-password-wrap">
-                    <input class="form-input" type="password" id="pass-old" placeholder="••••••••">
-                    <button class="btn-toggle-pass" onclick="togglePass('pass-old', this)">👁</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Kata Sandi Baru</label>
-                  <div class="input-password-wrap">
-                    <input class="form-input" type="password" id="pass-new" placeholder="Min. 6 karakter">
-                    <button class="btn-toggle-pass" onclick="togglePass('pass-new', this)">👁</button>
-                  </div>
-                </div>
-                <div class="form-group">
-                  <label class="form-label">Konfirmasi Kata Sandi Baru</label>
-                  <div class="input-password-wrap">
-                    <input class="form-input" type="password" id="pass-confirm" placeholder="Ulangi kata sandi baru">
-                    <button class="btn-toggle-pass" onclick="togglePass('pass-confirm', this)">👁</button>
-                  </div>
-                </div>
-              </div>
-              <div style="display:flex; justify-content:flex-end; margin-top:8px;">
-                <button class="btn-add" onclick="saveNewPassword()">Ubah Kata Sandi</button>
-              </div>
+            <div style="display:flex;justify-content:flex-end;margin-top:8px;"><button class="btn-add" onclick="saveNewPassword()">Ubah Kata Sandi</button></div>
+          </div>
+          <div class="card profile-section danger-zone">
+            <div class="profile-section-title">⚠️ Zona Berbahaya</div>
+            <div class="danger-desc">Tindakan ini tidak dapat dibatalkan.</div>
+            <div style="display:flex;gap:12px;margin-top:16px;flex-wrap:wrap;">
+              <button class="btn-danger" onclick="confirmClearData()">🗑 Hapus Semua Data</button>
+              <button class="btn-danger btn-danger-outline" onclick="confirmDeleteAccount()">💀 Hapus Akun</button>
             </div>
-
-            <!-- Danger Zone -->
-            <div class="card profile-section danger-zone">
-              <div class="profile-section-title">⚠️ Zona Berbahaya</div>
-              <div class="danger-desc">Menghapus semua data transaksi tidak dapat dibatalkan. Akun Anda akan tetap ada namun seluruh riwayat transaksi akan terhapus permanen.</div>
-              <div style="display:flex; gap:12px; margin-top:16px; flex-wrap:wrap;">
-                <button class="btn-danger" onclick="confirmClearData()">🗑 Hapus Semua Transaksi</button>
-                <button class="btn-danger btn-danger-outline" onclick="confirmDeleteAccount()">💀 Hapus Akun</button>
-              </div>
-            </div>
-
           </div>
         </div>
       </div>
+    </div>
 
-    </main>
+  </main>
+</div>
+
+<!-- SEMESTER MODAL -->
+<div id="semester-modal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">⚙️ Kelola Semester</div>
+    <div id="semester-list" style="margin-bottom:20px;"></div>
+    <div class="card-title" style="margin-bottom:10px;">Tambah Semester Baru</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;">
+      <div class="form-group"><label class="form-label">Nama Semester</label><input class="form-input" type="text" id="new-sem-name" placeholder="cth. Semester 7"></div>
+      <div class="form-group"><label class="form-label">Bulan Mulai</label><input class="form-input" type="month" id="new-sem-start"></div>
+      <div class="form-group"><label class="form-label">Bulan Selesai</label><input class="form-input" type="month" id="new-sem-end"></div>
+    </div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn-sm" onclick="closeSemesterModal()">Tutup</button>
+      <button class="btn-sm btn-primary-sm" onclick="addSemester()">+ Tambah</button>
+    </div>
   </div>
+</div>
 
-  <!-- Toast Notification -->
-  <div class="toast" id="toast"></div>
-
-  <script src="app.js"></script>
+<div class="toast" id="toast"></div>
+<script src="app.js"></script>
 </body>
 </html>
